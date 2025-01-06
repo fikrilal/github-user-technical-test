@@ -147,25 +147,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
                 SizedBox(height: 32.h),
-                ButtonComponent(
-                  text: 'Refresh Geolocation',
-                  onPressed: () {
-                    setState(() {
-                      _currentLocation = _getCurrentLocation();
-                    });
-                  },
+                SizedBox(
+                  width: double.infinity,
+                  child: ButtonComponent(
+                    text: 'Refresh Geolocation',
+                    onPressed: () {
+                      setState(() {
+                        _currentLocation = _getCurrentLocation();
+                      });
+                    },
+                  ),
                 ),
                 SizedBox(height: 10.h),
-                ButtonComponent(
-                  text: 'Capture Photo Picture',
-                  variant: ButtonVariant.secondary,
-                  onPressed: _capturePhoto,
+                SizedBox(
+                  width: double.infinity,
+                  child: ButtonComponent(
+                    text: 'Capture Photo Picture',
+                    variant: ButtonVariant.secondary,
+                    onPressed: _capturePhoto,
+                  ),
                 ),
                 SizedBox(height: 10.h),
-                ButtonComponent(
-                  text: 'Select Gallery',
-                  variant: ButtonVariant.secondary,
-                  onPressed: _selectPhotoFromGallery,
+                SizedBox(
+                  width: double.infinity,
+                  child: ButtonComponent(
+                    text: 'Select Gallery',
+                    variant: ButtonVariant.secondary,
+                    onPressed: _selectPhotoFromGallery,
+                  ),
                 ),
               ],
             ),

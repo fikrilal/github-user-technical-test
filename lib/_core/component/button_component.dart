@@ -91,7 +91,6 @@ class ButtonNoFill extends StatelessWidget {
           children: [
             Icon(
               Icons.download,
-              //size: 20,
               color: PrimaryColors.main,
             ),
             SizedBox(width: 2.w),
@@ -107,6 +106,5 @@ class ButtonNoFill extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

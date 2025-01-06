@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:github_user_technical/favorite/presentation/screens/favorite_screen.dart';
 import 'package:github_user_technical/popular/presentation/screen/detail_screen.dart';
 import 'package:github_user_technical/popular/presentation/screen/popular_list_screen.dart';
 import 'package:github_user_technical/profile/presentation/screens/profile_screen.dart';
@@ -9,11 +8,11 @@ import '../../favorite/domain/usecase/get_favorite_usecase.dart';
 import '../../favorite/domain/usecase/remove_favorite_usecase.dart';
 import '../../favorite/presentation/bloc/favorite_bloc.dart';
 import '../../popular/domain/usecases/get_detail_user_usecase.dart';
-import '../../popular/domain/usecases/get_user_usecase.dart';
-import '../../popular/presentation/bloc/popular_bloc.dart';
 import '../../popular/presentation/bloc/user_detail_bloc.dart';
 import '../../popular/presentation/bloc/user_detail_event.dart';
-import '../service/init_service.dart';
+import '../../popular/domain/usecases/get_user_usecase.dart';
+import '../../popular/presentation/bloc/popular_bloc.dart';
+import '../../popular/presentation/bloc/popular_event.dart';
 import 'app_route.dart';
 
 class AppPages {
@@ -21,7 +20,14 @@ class AppPages {
     switch (settings.name) {
       case AppRoutes.popularScreen:
         return MaterialPageRoute(
-          builder: (context) => const PopularListScreen(),
+          builder: (context) {
+            final getUsersUseCase = RepositoryProvider.of<GetUsersUseCase>(context);
+            return BlocProvider<PopularBloc>(
+              create: (_) => PopularBloc(getUsersUseCase)
+                ..add(const FetchUsersEvent(forceRefresh: true)),
+              child: const PopularListScreen(),
+            );
+          },
         );
       case AppRoutes.detailScreen:
         final username = settings.arguments as String;
