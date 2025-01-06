@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:github_user_technical/popular/data/repositories/user_detail_repository_impl.dart';
+import 'package:github_user_technical/popular/domain/repositories/user_repository.dart';
+import 'package:github_user_technical/popular/domain/usecases/get_detail_user_usecase.dart';
 import 'package:github_user_technical/popular/domain/usecases/get_user_usecase.dart';
 import 'package:github_user_technical/popular/presentation/bloc/popular_bloc.dart';
 import 'package:github_user_technical/popular/presentation/bloc/popular_event.dart';
@@ -14,14 +17,28 @@ void main() async {
   final initService = InitService();
   await initService.init();
 
+  // Initialize repositories and use cases
   final userRepository = initService.getUserRepository();
-  final getUsersUseCase = GetUsersUseCase(userRepository);
+  final userDetailRepository = initService.getUserDetailRepository();
 
   runApp(
     MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<UserRepository>(
+          create: (_) => userRepository,
+        ),
+        RepositoryProvider<UserDetailRepository>(
+          create: (_) => userDetailRepository,
+        ),
         RepositoryProvider<GetUsersUseCase>(
-          create: (_) => getUsersUseCase,
+          create: (context) => GetUsersUseCase(
+            RepositoryProvider.of<UserRepository>(context),
+          ),
+        ),
+        RepositoryProvider<GetUserDetailUseCase>(
+          create: (context) => GetUserDetailUseCase(
+            RepositoryProvider.of<UserDetailRepository>(context),
+          ),
         ),
       ],
       child: MultiBlocProvider(
@@ -38,6 +55,7 @@ void main() async {
   );
 }
 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -53,7 +71,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           initialRoute: AppRoutes.popularScreen,
-          routes: AppPages.getRoutes(),
+          onGenerateRoute: AppPages.onGenerateRoute,
         );
       },
     );

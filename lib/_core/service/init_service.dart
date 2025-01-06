@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:github_user_technical/popular/data/datasources/local/user_detail_local_datasource.dart';
+import 'package:github_user_technical/popular/data/datasources/remote/user_detail_remote_datasource.dart';
 
 import '../../popular/data/datasources/local/user_local_datasource.dart';
 import '../../popular/data/datasources/remote/user_remote_datasource.dart';
+import '../../popular/data/repositories/user_detail_repository_impl.dart';
 import '../../popular/data/repositories/user_repository_impl.dart';
 import '../../popular/domain/repositories/user_repository.dart';
 import '../database/database_service.dart';
@@ -35,6 +38,15 @@ class InitService {
     final remoteDataSource = UserRemoteDataSourceImpl(apiHelper);
     final localDataSource = UserLocalDataSourceImpl(databaseService);
     return UserRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+      localDataSource: localDataSource,
+    );
+  }
+
+  UserDetailRepository getUserDetailRepository() {
+    final remoteDataSource = UserDetailRemoteDataSource(apiHelper);
+    final localDataSource = UserDetailLocalDataSource(databaseService);
+    return UserDetailRepository(
       remoteDataSource: remoteDataSource,
       localDataSource: localDataSource,
     );

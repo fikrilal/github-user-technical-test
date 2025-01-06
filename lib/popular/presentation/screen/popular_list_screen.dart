@@ -1,9 +1,12 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:github_user_technical/_core/component/button_component.dart';
+import 'package:github_user_technical/_core/component/textfield_component.dart';
+import 'package:github_user_technical/_core/constant/colors.dart';
 import 'package:github_user_technical/_core/constant/typography.dart';
 import 'package:github_user_technical/_core/route/app_route.dart';
 import '../../domain/entities/user_entity.dart';
@@ -12,6 +15,7 @@ import '../bloc/popular_bloc.dart';
 import '../bloc/popular_event.dart';
 import '../bloc/popular_state.dart';
 import '../components/user_card.dart';
+import 'detail_screen.dart';
 
 class PopularListScreen extends StatelessWidget {
   const PopularListScreen({super.key});
@@ -81,7 +85,11 @@ class PopularListScreen extends StatelessWidget {
                   name: user.username,
                   role: user.htmlUrl,
                   onTap: () {
-                    AppRoutes.detailScreen;
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.detailScreen,
+                      arguments: user.username,
+                    );
                   },
                 ),
               );
@@ -122,20 +130,61 @@ class PopularListScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          TypographyStyles.bodyMainBold(
-            'No Favorites Yet!',
+          Center(
+            child: SizedBox(
+              width: 100.0,
+              height: 100.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: CachedNetworkImage(
+                  imageUrl: 'https://picsum.photos/200',
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
           ),
           SizedBox(height: 10.h),
-          TypographyStyles.bodyCaptionRegular(
-            'Star repositories or bookmark projects to easily find them here later. Let’s build your list of go-to resources!',
+          Center(
+            child: TypographyStyles.bodyMainBold('John Doe'),
           ),
-          ButtonComponent(
-            text: 'Refresh',
-            onPressed: () {
-              log('Refresh favorites pressed', name: 'PopularListScreen');
-            },
+          SizedBox(height: 32.h),
+          TypographyStyles.bodyCaptionRegular('Name'),
+          SizedBox(height: 8.h),
+          TypographyStyles.bodyMainMedium('John Doe'),
+          SizedBox(height: 4.h),
+          const Divider(
+            color: NeutralColors.neutral200,
+          ),
+          SizedBox(height: 16.h),
+          TypographyStyles.bodyCaptionRegular('Email'),
+          SizedBox(height: 8.h),
+          TypographyStyles.bodyMainMedium('john@gmail.com'),
+          SizedBox(height: 4.h),
+          const Divider(
+            color: NeutralColors.neutral200,
+          ),
+          SizedBox(height: 16.h),
+          TypographyStyles.bodyCaptionRegular('Location'),
+          SizedBox(height: 8.h),
+          TypographyStyles.bodyMainMedium('Portland'),
+          SizedBox(height: 4.h),
+          const Divider(
+            color: NeutralColors.neutral200,
+          ),
+          SizedBox(height: 16.h),
+          TypographyStyles.bodyCaptionRegular('Company'),
+          SizedBox(height: 8.h),
+          TypographyStyles.bodyMainMedium('Linux Foundation'),
+          SizedBox(height: 4.h),
+          const Divider(
+            color: NeutralColors.neutral200,
           ),
         ],
       ),

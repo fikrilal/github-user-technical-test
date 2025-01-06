@@ -17,6 +17,9 @@ class DatabaseSetup {
     await db.execute('''
       CREATE TABLE ${DatabaseConstants.tableUserDetails} (
         ${DatabaseConstants.columnId} INTEGER PRIMARY KEY,
+        ${DatabaseConstants.columnUsername} TEXT NOT NULL,
+        ${DatabaseConstants.columnAvatarUrl} TEXT NOT NULL,
+        ${DatabaseConstants.columnHtmlUrl} TEXT NOT NULL,
         ${DatabaseConstants.columnName} TEXT,
         ${DatabaseConstants.columnCompany} TEXT,
         ${DatabaseConstants.columnBlog} TEXT,
@@ -24,12 +27,12 @@ class DatabaseSetup {
         ${DatabaseConstants.columnEmail} TEXT,
         ${DatabaseConstants.columnBio} TEXT,
         ${DatabaseConstants.columnTwitterUsername} TEXT,
-        ${DatabaseConstants.columnPublicRepos} INTEGER NOT NULL,
-        ${DatabaseConstants.columnPublicGists} INTEGER NOT NULL,
-        ${DatabaseConstants.columnFollowers} INTEGER NOT NULL,
-        ${DatabaseConstants.columnFollowing} INTEGER NOT NULL,
-        ${DatabaseConstants.columnCreatedAt} TEXT NOT NULL,
-        ${DatabaseConstants.columnUpdatedAt} TEXT NOT NULL
+        ${DatabaseConstants.columnPublicRepos} INTEGER,
+        ${DatabaseConstants.columnPublicGists} INTEGER,
+        ${DatabaseConstants.columnFollowers} INTEGER,
+        ${DatabaseConstants.columnFollowing} INTEGER,
+        ${DatabaseConstants.columnCreatedAt} TEXT,
+        ${DatabaseConstants.columnUpdatedAt} TEXT
       )
     ''');
   }

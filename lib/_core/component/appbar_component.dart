@@ -62,7 +62,7 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
             IconButton(
               onPressed: onTab2,
               icon: Icon(
-                Icons.filter_alt_rounded,
+                Icons.favorite_border,
                 size: 24,
                 color: TextColors.base.withOpacity(0.87),
               ),
