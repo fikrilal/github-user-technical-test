@@ -1,7 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:github_user_technical/_core/component/button_component.dart';
 import 'package:github_user_technical/_core/constant/typography.dart';
+import 'package:github_user_technical/_core/route/app_route.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/get_user_usecase.dart';
+import '../bloc/popular_bloc.dart';
+import '../bloc/popular_event.dart';
+import '../bloc/popular_state.dart';
 import '../components/user_card.dart';
 
 class PopularListScreen extends StatelessWidget {
@@ -9,39 +18,43 @@ class PopularListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: TypographyStyles.h5('Github User Profile'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                // Handle icon button press
-                print('Settings button pressed');
-              },
+    return BlocProvider(
+      create: (context) => PopularBloc(
+        RepositoryProvider.of<GetUsersUseCase>(context),
+      )..add(const FetchUsersEvent(forceRefresh: false)),
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: TypographyStyles.h5('Github User Profile'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  log('Settings button pressed', name: 'PopularListScreen');
+                },
+              ),
+            ],
+            bottom: const TabBar(
+              tabs: [
+                Tab(
+                  icon: Icon(Icons.person),
+                  text: 'Popular',
+                ),
+                Tab(
+                  icon: Icon(Icons.favorite),
+                  text: 'Favorite',
+                ),
+              ],
             ),
-          ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(
-                icon: Icon(Icons.person),
-                text: 'Popular',
-              ),
-              Tab(
-                icon: Icon(Icons.favorite),
-                text: 'Favorite',
-              ),
-            ],
           ),
-        ),
-        body: SafeArea(
-          child: TabBarView(
-            children: [
-              buildPopularContent(),
-              buildFavoriteContent(),
-            ],
+          body: SafeArea(
+            child: TabBarView(
+              children: [
+                buildPopularContent(),
+                buildFavoriteContent(),
+              ],
+            ),
           ),
         ),
       ),
@@ -49,33 +62,60 @@ class PopularListScreen extends StatelessWidget {
   }
 
   Widget buildPopularContent() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      child: Column(
-        children: [
-          UserCard(
-            imageUrl: "https://picsum.photos/200",
-            name: "John Doe",
-            role: "User",
-          ),
-        ],
-      ),
+    return BlocBuilder<PopularBloc, PopularState>(
+      builder: (context, state) {
+        if (state is PopularLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is PopularLoaded) {
+          return ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            itemCount: state.users.length,
+            itemBuilder: (context, index) {
+              final UserEntity user = state.users[index];
+              return Padding(
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: UserCard(
+                  imageUrl: user.avatarUrl,
+                  name: user.username,
+                  role: user.htmlUrl,
+                  onTap: () {
+                    AppRoutes.detailScreen;
+                  },
+                ),
+              );
+            },
+          );
+        } else if (state is PopularError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TypographyStyles.bodyMainBold(
+                  state.message,
+                ),
+                SizedBox(height: 10.h),
+                ButtonComponent(
+                  text: 'Retry',
+                  onPressed: () {
+                    context.read<PopularBloc>().add(const FetchUsersEvent(forceRefresh: true));
+                  },
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const Center(
+            child: Text('No Data'),
+          );
+        }
+      },
     );
   }
 
   Widget buildFavoriteContent() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      child: Column(
-        children: [
-          UserCard(
-            imageUrl: "https://picsum.photos/200",
-            name: "John Doe",
-            role: "User",
-          ),
-        ],
-      ),
-    );
+    return buildEmptyStateFavorite();
   }
 
   Widget buildEmptyStateFavorite() {
@@ -93,8 +133,10 @@ class PopularListScreen extends StatelessWidget {
           ),
           ButtonComponent(
             text: 'Refresh',
-            onPressed: () {},
-          )
+            onPressed: () {
+              log('Refresh favorites pressed', name: 'PopularListScreen');
+            },
+          ),
         ],
       ),
     );

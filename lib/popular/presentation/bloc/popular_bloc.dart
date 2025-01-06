@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:github_user_technical/popular/presentation/bloc/popular_event.dart';
 import 'package:github_user_technical/popular/presentation/bloc/popular_state.dart';
-
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/get_user_usecase.dart';
 

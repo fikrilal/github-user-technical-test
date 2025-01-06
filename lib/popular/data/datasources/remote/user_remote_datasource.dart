@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../../../../_core/data/models/local/user_remote_model.dart';
 import '../../../../_core/network/api_helper.dart';
 
@@ -18,9 +20,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'sort': 'followers',
         'order': 'desc',
       });
+      log('API Response: ${response.data}', name: 'UserRemoteDataSource');
       final List<dynamic> items = response.data['items'];
       return items.map((json) => UserRemoteModel.fromJson(json)).toList();
     } catch (e) {
+      log('Error fetching users: $e', name: 'UserRemoteDataSource', level: 3);
       rethrow;
     }
   }

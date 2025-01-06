@@ -9,18 +9,22 @@ class UserCard extends StatelessWidget {
   final String imageUrl;
   final String name;
   final String role;
+  final VoidCallback onTap;
 
   const UserCard({
     super.key,
     required this.imageUrl,
     required this.name,
     required this.role,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return ZoomTapAnimation(
+      onTap: onTap,
       child: Container(
+        padding: EdgeInsets.all(10.w),
         decoration: BoxDecoration(
           color: NeutralColors.neutral100,
           borderRadius: BorderRadius.circular(8.r),
@@ -44,14 +48,19 @@ class UserCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TypographyStyles.bodyMainMedium(name),
-                SizedBox(height: 6.h),
-                TypographyStyles.bodyCaptionRegular(role),
-              ],
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TypographyStyles.bodyMainMedium(name),
+                  SizedBox(height: 6.h),
+                  TypographyStyles.bodyCaptionRegular(
+                    role,
+                    maxLines: 2,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

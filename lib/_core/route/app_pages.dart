@@ -10,17 +10,9 @@ import '../service/init_service.dart';
 import 'app_route.dart';
 
 class AppPages {
-  static Map<String, WidgetBuilder> getRoutes(InitService initService) {
+  static Map<String, WidgetBuilder> getRoutes() {
     return {
-      AppRoutes.popularScreen: (context) {
-        final userRepository = initService.getUserRepository();
-        final getUsersUseCase = GetUsersUseCase(userRepository);
-
-        return BlocProvider(
-          create: (context) => PopularBloc(getUsersUseCase),
-          child: const PopularListScreen(),
-        );
-      }
+      AppRoutes.popularScreen: (context) => const PopularListScreen(),
     };
   }
 }
