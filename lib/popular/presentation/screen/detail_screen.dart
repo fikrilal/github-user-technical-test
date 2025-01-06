@@ -23,52 +23,51 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarComponent(
-        title: 'Detail User',
-        showBottomBorder: true,
-        favoriteState: context.watch<FavoriteBloc>().state,
-        onTab2: () {
-          final userDetailState = context.read<UserDetailBloc>().state;
-          final favoriteState = context.read<FavoriteBloc>().state;
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: BlocBuilder<FavoriteBloc, FavoriteState>(
+          builder: (context, state) {
+            bool isFavorite = false;
 
-          if (userDetailState is UserDetailLoaded) {
-            final userDetail = userDetailState.userDetail;
-
-            if (favoriteState is FavoriteLoaded) {
-              final isFavorite = favoriteState.favorites.any((user) => user.id == userDetail.id);
-              final favoriteBloc = context.read<FavoriteBloc>();
-
-              if (isFavorite) {
-                favoriteBloc.add(RemoveFavoriteEvent(userDetail.id));
-              } else {
-                favoriteBloc.add(
-                  AddFavoriteEvent(UserEntity(
-                    id: userDetail.id,
-                    username: userDetail.username ?? '',
-                    avatarUrl: userDetail.avatarUrl,
-                    htmlUrl: userDetail.htmlUrl,
-                  )),
-                );
+            if (state is FavoriteLoaded) {
+              final userDetailState = context.watch<UserDetailBloc>().state;
+              if (userDetailState is UserDetailLoaded) {
+                final userDetail = userDetailState.userDetail;
+                isFavorite = state.favorites.any((user) => user.id == userDetail.id);
               }
-            } else if (favoriteState is FavoriteLoading) {
-              // Provide feedback that favorites are still loading
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Favorites are still loading. Please wait.')),
-              );
-            } else {
-              // Handle other states (e.g., FavoriteError)
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Favorites are not ready yet.')),
-              );
             }
-          } else {
-            // Handle cases where user detail is not loaded
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('User details are not available.')),
+
+            return AppBarComponent(
+              title: 'Detail User',
+              isFavorite: isFavorite,
+              onTab2: () {
+                final userDetailState = context.read<UserDetailBloc>().state;
+
+                if (userDetailState is UserDetailLoaded) {
+                  final userDetail = userDetailState.userDetail;
+                  final favoriteBloc = context.read<FavoriteBloc>();
+
+                  if (isFavorite) {
+                    favoriteBloc.add(RemoveFavoriteEvent(userDetail.id));
+                  } else {
+                    favoriteBloc.add(
+                      AddFavoriteEvent(UserEntity(
+                        id: userDetail.id,
+                        username: userDetail.username ?? '',
+                        avatarUrl: userDetail.avatarUrl,
+                        htmlUrl: userDetail.htmlUrl,
+                      )),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('User details are not available.')),
+                  );
+                }
+              },
             );
-          }
-        },
-        isFavorite: _isUserFavorite(context),
+          },
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -106,17 +105,6 @@ class DetailScreen extends StatelessWidget {
     );
   }
 
-  bool _isUserFavorite(BuildContext context) {
-    final favoriteState = context.watch<FavoriteBloc>().state;
-    if (favoriteState is FavoriteLoaded) {
-      final userDetailState = context.read<UserDetailBloc>().state;
-      if (userDetailState is UserDetailLoaded) {
-        final userDetail = userDetailState.userDetail;
-        return favoriteState.favorites.any((user) => user.id == userDetail.id);
-      }
-    }
-    return false;
-  }
 
   Widget buildUserDetailContent(UserDetailEntity userDetail) {
     return Column(

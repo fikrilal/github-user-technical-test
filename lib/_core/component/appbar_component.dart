@@ -13,7 +13,6 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
   final bool showBottomBorder;
   final bool isFavorite;
   final PreferredSizeWidget? bottom;
-  final FavoriteState favoriteState;
 
   const AppBarComponent({
     super.key,
@@ -26,7 +25,6 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
     this.showBottomBorder = false,
     this.bottom,
     this.isFavorite = false,
-    required this.favoriteState,
   });
 
   @override
@@ -35,49 +33,43 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-        backgroundColor: backgroundColor,
-        surfaceTintColor: Colors.white,
-        elevation: elevation,
-        centerTitle: true,
-        leading: onBack != null
-            ? IconButton(
-                onPressed: onBack,
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: TextColors.base.withOpacity(0.87),
-                  size: 24,
-                ),
-              )
-            : null,
-        title: TypographyStyles.h6(
-          title,
-          textAlign: TextAlign.center,
+      backgroundColor: backgroundColor,
+      surfaceTintColor: Colors.white,
+      elevation: elevation,
+      centerTitle: true,
+      leading: onBack != null
+          ? IconButton(
+        onPressed: onBack,
+        icon: Icon(
+          Icons.arrow_back,
+          color: TextColors.base.withOpacity(0.87),
+          size: 24,
         ),
-        bottom: showBottomBorder
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(1.0),
-                child: Container(
-                  color: TextColors.base.withOpacity(0.12),
-                  height: 1.0,
-                ),
-              )
-            : null,
-        actions: [
-          if (onTab2 != null)
-            IconButton(
-              onPressed: onTab2,
-              icon: _getFavoriteIcon()
+      )
+          : null,
+      title: TypographyStyles.h6(
+        title,
+        textAlign: TextAlign.center,
+      ),
+      bottom: showBottomBorder
+          ? PreferredSize(
+        preferredSize: const Size.fromHeight(1.0),
+        child: Container(
+          color: TextColors.base.withOpacity(0.12),
+          height: 1.0,
+        ),
+      )
+          : null,
+      actions: [
+        if (onTab2 != null)
+          IconButton(
+            onPressed: onTab2,
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.red : null,
             ),
-        ]);
-  }
-
-  Icon _getFavoriteIcon() {
-    if (favoriteState is FavoriteLoading) {
-      return const Icon(Icons.hourglass_empty);
-    } else if (isFavorite) {
-      return const Icon(Icons.favorite, color: Colors.red);
-    } else {
-      return const Icon(Icons.favorite_border);
-    }
+          ),
+      ],
+    );
   }
 }

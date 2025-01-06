@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../popular/domain/entities/user_entity.dart';
 import '../../domain/usecase/add_favorite_usecase.dart';
 import '../../domain/usecase/get_favorite_usecase.dart';
 import '../../domain/usecase/remove_favorite_usecase.dart';
@@ -35,7 +37,9 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     try {
       emit(FavoriteLoading());
       await addFavoriteUseCase(event.user);
-      add(LoadFavoritesEvent());
+      final updatedFavorites = await getFavoritesUseCase();
+      emit(FavoriteLoaded(updatedFavorites));
+      _logFavorites(updatedFavorites, 'Add Favorite');
     } catch (e) {
       emit(const FavoriteError('Failed to add favorite'));
     }
@@ -45,7 +49,9 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     try {
       emit(FavoriteLoading());
       await removeFavoriteUseCase(event.id);
-      add(LoadFavoritesEvent());
+      final updatedFavorites = await getFavoritesUseCase();
+      emit(FavoriteLoaded(updatedFavorites));
+      _logFavorites(updatedFavorites, 'Remove Favorite');
     } catch (e) {
       emit(const FavoriteError('Failed to remove favorite'));
     }
@@ -56,8 +62,26 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
       emit(FavoriteLoading());
       final favorites = await getFavoritesUseCase();
       emit(FavoriteLoaded(favorites));
+      _logFavorites(favorites, 'Load Favorites');
     } catch (e) {
       emit(const FavoriteError('Failed to load favorites'));
     }
+  }
+
+  void _logFavorites(List<UserEntity> favorites, String action) {
+    final favoriteUsernames = favorites.map((user) => user.username).toList();
+    log('$action: Current Favorites: $favoriteUsernames', name: 'FavoriteBloc');
+  }
+
+  @override
+  void onChange(Change<FavoriteState> change) {
+    super.onChange(change);
+    log('FavoriteBloc state changed: ${change.nextState}', name: 'FavoriteBloc');
+  }
+
+  @override
+  void onEvent(FavoriteEvent event) {
+    super.onEvent(event);
+    log('FavoriteBloc event: $event', name: 'FavoriteBloc');
   }
 }
