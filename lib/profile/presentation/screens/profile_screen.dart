@@ -28,7 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       throw Exception('Location permissions are permanently denied.');
     }
 
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   late Future<Position> _currentLocation;
@@ -102,15 +103,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: _photoPath != null
                           ? Image.file(File(_photoPath!), fit: BoxFit.cover)
                           : Container(
-                        color: Colors.grey,
-                        child: Icon(Icons.person, size: 48.w),
-                      ),
+                              color: Colors.grey,
+                              child: Icon(Icons.person, size: 48.w),
+                            ),
                     ),
                   ),
                 ),
                 SizedBox(height: 10.h),
                 Center(
-                  child: TypographyStyles.bodyMainBold('John Doe'),
+                  child:
+                      TypographyStyles.bodyMainBold('Ahmad Fikril Al Muzakki'),
                 ),
                 SizedBox(height: 32.h),
                 buildDetailRow('Email', 'fikrildev@gmail.com'),
