@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:github_user_technical/popular/data/datasources/local/user_detail_local_datasource.dart';
 import 'package:github_user_technical/popular/data/datasources/remote/user_detail_remote_datasource.dart';
 
+import '../../favorite/data/datasources/local/favorite_local_datasource.dart';
+import '../../favorite/domain/repositories/favorite_repository.dart';
 import '../../popular/data/datasources/local/user_local_datasource.dart';
 import '../../popular/data/datasources/remote/user_remote_datasource.dart';
 import '../../popular/data/repositories/user_detail_repository_impl.dart';
@@ -50,5 +52,10 @@ class InitService {
       remoteDataSource: remoteDataSource,
       localDataSource: localDataSource,
     );
+  }
+
+  FavoriteRepository getFavoriteRepository() {
+    final localDataSource = FavoriteLocalDataSourceImpl(databaseService);
+    return FavoriteRepository(localDataSource);
   }
 }

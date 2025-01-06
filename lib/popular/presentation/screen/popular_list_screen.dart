@@ -130,61 +130,20 @@ class PopularListScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(
-            child: SizedBox(
-              width: 100.0,
-              height: 100.0,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: CachedNetworkImage(
-                  imageUrl: 'https://picsum.photos/200',
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+          TypographyStyles.bodyMainBold(
+            'No Favorites Yet!',
           ),
           SizedBox(height: 10.h),
-          Center(
-            child: TypographyStyles.bodyMainBold('John Doe'),
+          TypographyStyles.bodyCaptionRegular(
+            'Star repositories or bookmark projects to easily find them here later. Let’s build your list of go-to resources!',
           ),
-          SizedBox(height: 32.h),
-          TypographyStyles.bodyCaptionRegular('Name'),
-          SizedBox(height: 8.h),
-          TypographyStyles.bodyMainMedium('John Doe'),
-          SizedBox(height: 4.h),
-          const Divider(
-            color: NeutralColors.neutral200,
-          ),
-          SizedBox(height: 16.h),
-          TypographyStyles.bodyCaptionRegular('Email'),
-          SizedBox(height: 8.h),
-          TypographyStyles.bodyMainMedium('john@gmail.com'),
-          SizedBox(height: 4.h),
-          const Divider(
-            color: NeutralColors.neutral200,
-          ),
-          SizedBox(height: 16.h),
-          TypographyStyles.bodyCaptionRegular('Location'),
-          SizedBox(height: 8.h),
-          TypographyStyles.bodyMainMedium('Portland'),
-          SizedBox(height: 4.h),
-          const Divider(
-            color: NeutralColors.neutral200,
-          ),
-          SizedBox(height: 16.h),
-          TypographyStyles.bodyCaptionRegular('Company'),
-          SizedBox(height: 8.h),
-          TypographyStyles.bodyMainMedium('Linux Foundation'),
-          SizedBox(height: 4.h),
-          const Divider(
-            color: NeutralColors.neutral200,
+          ButtonComponent(
+            text: 'Refresh',
+            onPressed: () {
+              log('Refresh favorites pressed', name: 'PopularListScreen');
+            },
           ),
         ],
       ),

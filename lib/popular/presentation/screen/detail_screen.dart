@@ -6,8 +6,11 @@ import 'package:github_user_technical/_core/component/appbar_component.dart';
 import '../../../_core/component/button_component.dart';
 import '../../../_core/constant/colors.dart';
 import '../../../_core/constant/typography.dart';
+import '../../../favorite/presentation/bloc/favorite_bloc.dart';
+import '../../../favorite/presentation/bloc/favorite_event.dart';
+import '../../../favorite/presentation/bloc/favorite_state.dart';
 import '../../domain/entities/user_detail_entity.dart';
-import '../../domain/usecases/get_detail_user_usecase.dart';
+import '../../domain/entities/user_entity.dart';
 import '../bloc/user_detail_bloc.dart';
 import '../bloc/user_detail_event.dart';
 import '../bloc/user_detail_state.dart';
@@ -23,15 +26,54 @@ class DetailScreen extends StatelessWidget {
       appBar: AppBarComponent(
         title: 'Detail User',
         showBottomBorder: true,
+        favoriteState: context.watch<FavoriteBloc>().state,
         onTab2: () {
+          final userDetailState = context.read<UserDetailBloc>().state;
+          final favoriteState = context.read<FavoriteBloc>().state;
 
+          if (userDetailState is UserDetailLoaded) {
+            final userDetail = userDetailState.userDetail;
+
+            if (favoriteState is FavoriteLoaded) {
+              final isFavorite = favoriteState.favorites.any((user) => user.id == userDetail.id);
+              final favoriteBloc = context.read<FavoriteBloc>();
+
+              if (isFavorite) {
+                favoriteBloc.add(RemoveFavoriteEvent(userDetail.id));
+              } else {
+                favoriteBloc.add(
+                  AddFavoriteEvent(UserEntity(
+                    id: userDetail.id,
+                    username: userDetail.username ?? '',
+                    avatarUrl: userDetail.avatarUrl,
+                    htmlUrl: userDetail.htmlUrl,
+                  )),
+                );
+              }
+            } else if (favoriteState is FavoriteLoading) {
+              // Provide feedback that favorites are still loading
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Favorites are still loading. Please wait.')),
+              );
+            } else {
+              // Handle other states (e.g., FavoriteError)
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Favorites are not ready yet.')),
+              );
+            }
+          } else {
+            // Handle cases where user detail is not loaded
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User details are not available.')),
+            );
+          }
         },
+        isFavorite: _isUserFavorite(context),
       ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.w),
           child: BlocBuilder<UserDetailBloc, UserDetailState>(
-            // Access the bloc here
             builder: (context, state) {
               if (state is UserDetailLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -40,19 +82,20 @@ class DetailScreen extends StatelessWidget {
                 return buildUserDetailContent(userDetail);
               } else if (state is UserDetailError) {
                 return Center(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TypographyStyles.bodyMainBold(state.message),
-                    SizedBox(height: 10.h),
-                    ButtonComponent(
-                      text: 'Retry',
-                      onPressed: () {
-                        context.read<UserDetailBloc>().add(FetchUserDetailEvent(username));
-                      },
-                    ),
-                  ],
-                ));
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TypographyStyles.bodyMainBold(state.message),
+                      SizedBox(height: 10.h),
+                      ButtonComponent(
+                        text: 'Retry',
+                        onPressed: () {
+                          context.read<UserDetailBloc>().add(FetchUserDetailEvent(username));
+                        },
+                      ),
+                    ],
+                  ),
+                );
               } else {
                 return const Center(child: Text('No Data'));
               }
@@ -61,6 +104,18 @@ class DetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _isUserFavorite(BuildContext context) {
+    final favoriteState = context.watch<FavoriteBloc>().state;
+    if (favoriteState is FavoriteLoaded) {
+      final userDetailState = context.read<UserDetailBloc>().state;
+      if (userDetailState is UserDetailLoaded) {
+        final userDetail = userDetailState.userDetail;
+        return favoriteState.favorites.any((user) => user.id == userDetail.id);
+      }
+    }
+    return false;
   }
 
   Widget buildUserDetailContent(UserDetailEntity userDetail) {

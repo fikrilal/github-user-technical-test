@@ -35,5 +35,15 @@ class DatabaseSetup {
         ${DatabaseConstants.columnUpdatedAt} TEXT
       )
     ''');
+
+    // Create favorites table
+    await db.execute('''
+      CREATE TABLE ${DatabaseConstants.tableFavorites} (
+        ${DatabaseConstants.columnFavoriteId} INTEGER PRIMARY KEY,
+        ${DatabaseConstants.columnFavoriteUsername} TEXT NOT NULL,
+        ${DatabaseConstants.columnFavoriteAvatarUrl} TEXT NOT NULL,
+        ${DatabaseConstants.columnFavoriteHtmlUrl} TEXT NOT NULL
+      )
+    ''');
   }
 }

@@ -4,6 +4,10 @@ import 'package:github_user_technical/favorite/presentation/screens/favorite_scr
 import 'package:github_user_technical/popular/presentation/screen/detail_screen.dart';
 import 'package:github_user_technical/popular/presentation/screen/popular_list_screen.dart';
 import 'package:github_user_technical/profile/presentation/screens/profile_screen.dart';
+import '../../favorite/domain/usecase/add_favorite_usecase.dart';
+import '../../favorite/domain/usecase/get_favorite_usecase.dart';
+import '../../favorite/domain/usecase/remove_favorite_usecase.dart';
+import '../../favorite/presentation/bloc/favorite_bloc.dart';
 import '../../popular/domain/usecases/get_detail_user_usecase.dart';
 import '../../popular/domain/usecases/get_user_usecase.dart';
 import '../../popular/presentation/bloc/popular_bloc.dart';
@@ -24,9 +28,20 @@ class AppPages {
         return MaterialPageRoute(
           builder: (context) {
             final getUserDetailUseCase = RepositoryProvider.of<GetUserDetailUseCase>(context);
-            return BlocProvider<UserDetailBloc>(
-              create: (_) => UserDetailBloc(getUserDetailUseCase)
-                ..add(FetchUserDetailEvent(username)),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<UserDetailBloc>(
+                  create: (_) => UserDetailBloc(getUserDetailUseCase)
+                    ..add(FetchUserDetailEvent(username)),
+                ),
+                BlocProvider<FavoriteBloc>(
+                  create: (context) => FavoriteBloc(
+                    addFavoriteUseCase: RepositoryProvider.of<AddFavoriteUseCase>(context),
+                    removeFavoriteUseCase: RepositoryProvider.of<RemoveFavoriteUseCase>(context),
+                    getFavoritesUseCase: RepositoryProvider.of<GetFavoritesUseCase>(context),
+                  )..add(LoadFavoritesEvent()),
+                ),
+              ],
               child: DetailScreen(username: username),
             );
           },

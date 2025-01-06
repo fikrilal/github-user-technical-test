@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../favorite/presentation/bloc/favorite_state.dart';
 import '../constant/colors.dart';
 import '../constant/typography.dart';
 
@@ -10,10 +11,12 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final double? elevation;
   final bool showBottomBorder;
+  final bool isFavorite;
   final PreferredSizeWidget? bottom;
+  final FavoriteState favoriteState;
 
   const AppBarComponent({
-    Key? key,
+    super.key,
     required this.title,
     this.onBack,
     this.onTab2,
@@ -22,7 +25,9 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
     this.elevation,
     this.showBottomBorder = false,
     this.bottom,
-  }) : super(key: key);
+    this.isFavorite = false,
+    required this.favoriteState,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -61,65 +66,18 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
           if (onTab2 != null)
             IconButton(
               onPressed: onTab2,
-              icon: Icon(
-                Icons.favorite_border,
-                size: 24,
-                color: TextColors.base.withOpacity(0.87),
-              ),
+              icon: _getFavoriteIcon()
             ),
         ]);
   }
-}
 
-class AppBarPrimary extends AppBarComponent {
-  AppBarPrimary({
-    required String title,
-    VoidCallback? onBack,
-    Color? backgroundColor,
-    double? elevation,
-  }) : super(
-            title: title,
-            onBack: onBack,
-            backgroundColor: backgroundColor,
-            elevation: elevation,
-            showBottomBorder: false);
-}
-
-class AppBarSecondary extends AppBarComponent {
-  AppBarSecondary({
-    required String title,
-    VoidCallback? onBack,
-    Color? backgroundColor,
-    double? elevation,
-  }) : super(
-            title: title,
-            onBack: onBack,
-            backgroundColor: backgroundColor,
-            elevation: elevation,
-            showBottomBorder: true);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: backgroundColor,
-      elevation: elevation,
-      leading: onBack != null
-          ? IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: TextColors.base.withOpacity(0.87),
-              ),
-              onPressed: onBack,
-            )
-          : null,
-      title: TypographyStyles.h6(title),
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1.0),
-        child: Container(
-          color: TextColors.base.withOpacity(0.87),
-          height: 1.0,
-        ),
-      ),
-    );
+  Icon _getFavoriteIcon() {
+    if (favoriteState is FavoriteLoading) {
+      return const Icon(Icons.hourglass_empty);
+    } else if (isFavorite) {
+      return const Icon(Icons.favorite, color: Colors.red);
+    } else {
+      return const Icon(Icons.favorite_border);
+    }
   }
 }

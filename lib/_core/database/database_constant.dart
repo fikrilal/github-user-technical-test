@@ -24,4 +24,11 @@ class DatabaseConstants {
   static const String columnFollowing = 'following';
   static const String columnCreatedAt = 'created_at';
   static const String columnUpdatedAt = 'updated_at';
+
+  // Table: favorites
+  static const String tableFavorites = 'favorites';
+  static const String columnFavoriteId = 'id';
+  static const String columnFavoriteUsername = 'username';
+  static const String columnFavoriteAvatarUrl = 'avatar_url';
+  static const String columnFavoriteHtmlUrl = 'html_url';
 }
