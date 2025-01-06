@@ -35,7 +35,10 @@ class PopularListScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
-                  log('Settings button pressed', name: 'PopularListScreen');
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.profileScreen,
+                  );
                 },
               ),
             ],

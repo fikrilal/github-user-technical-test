@@ -46,6 +46,10 @@ class AppPages {
             );
           },
         );
+      case AppRoutes.profileScreen:
+        return MaterialPageRoute(
+          builder: (context) => const ProfileScreen(),
+        );
       default:
         return null;
     }
